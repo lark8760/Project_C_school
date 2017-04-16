@@ -399,7 +399,7 @@ void menu(void)
 
     do
     {
-        printf("\n\nNa razie dziala 1,4,11,12,13,14");
+        printf("\n\nNa razie dziala 1,3,4,11,12,13,14");
         printf("\n(1)	Wyswietl baze klientow");
         printf("\n(2)	Modyfikuj dane klienta");
         printf("\n(3)	Dodaj klienta");
