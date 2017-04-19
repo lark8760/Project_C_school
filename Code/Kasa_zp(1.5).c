@@ -6,33 +6,31 @@
 #include <string.h>
 #include <errno.h>
 
-#define LP 50
-
-
 //void glowne
 void baza_k();                  //wyswietla baze klientow
 void mod_klienta();	            //modyfikacja danych klienta
 void dodaj_klienta();	        //dodanie klienta do bazy danych
 void usun_klienta();	        //usuniecie klienta z bazy danych
+void baza_p();                  //
 void sort_nazw();	            //wyswietlanie listy klientów posortowanej po nazwisku
 //void sort_kwota();	            //wyswietlanie listy klientów posortowanej po wysokosci pozyczki
 //void zadluzenie();	            //sprawdzanie ile zadluzony jest dany klient
 //void splata_teraz();	        //wyswietlanie listy klientów którzy skoncza splacac pozyczke w tym miesiacu
 void menu();		            //funkcja do obslugi interfejsu
-//void haslo();		            //funkcja odpowiadajaca za zabezpieczenie
-void zapisz ();                 //zapisuje baze danych po wprowadzonych zmianach
+void zapisz();                 //zapisuje baze danych po wprowadzonych zmianach
 //void pomocnicze
 void wielka_litera();           //poprawia na wielka litere, reszta male
-int pesel_check ();             //sprawdza poprawnosc daty w peselu (nie sprawdza sumy kontrolnej) oraz dlugosc podanego peselu
-int dowod_check ();             //sprawdza poprawnosc wpisanego nr dowodu
-void ulica_correct ();          //poprawia format wpisanej ulicy/miasta
-int kod_check ();               //sprawdza poprawnosc wpisanego kodu pocztowego
+int pesel_check();             //sprawdza poprawnosc daty w peselu (nie sprawdza sumy kontrolnej) oraz dlugosc podanego peselu
+int dowod_check();             //sprawdza poprawnosc wpisanego nr dowodu
+void ulica_correct();          //poprawia format wpisanej ulicy/miasta
+int kod_check();               //sprawdza poprawnosc wpisanego kodu pocztowego
 int alfabet();                  //sprawdza ktory z podanych stringow jest bardziej alfabetyczny
+void oblicz();                  //obliczenia zwiazane z baza pozyczek
 void delay();                   //upiekszanie
 
 int i,j,k,l;                    //zmienne pomocnicze
 int LK;                         //liczba klientow
-
+int LP;                         //liczba pozyczek
 
 
 typedef struct                  //struktura do obslugi klientow
@@ -73,7 +71,6 @@ float rata_lacz;                //rata laczna (w tym miesiacu)  nie wprowadzana 
 
 osoba klient[2000];
 bank poz[10000];
-osoba klients[2];
 
 
 //void glowne
@@ -558,29 +555,60 @@ void usun_klienta(void)
             }
 }
 
-void sort_nazw()
+void baza_p(void)
+{
+    printf("\n\n\tNumer");
+    printf("\tKwota");
+    printf("\tData pobrania");
+    printf("\tNa ile");
+    printf("\tNa jaki procent");
+    for (i=0;i<LP;++i)
+    {                                       //jesli gdzies w srodku 0 znaczy blad wczytywania
+        printf("\n\n\t%d",poz[i].numer);
+        printf("\t%d",poz[i].kwota);
+
+        printf("\t%d.%d.%d",poz[i].rok,poz[i].miesiac,poz[i].dzien);
+
+        printf("\t%d",poz[i].na_ile);
+        printf("\t%.2f",poz[i].procent);
+    }
+}
+
+void sort_nazw(void)
 {
     int i,j,zamiana=0,zam,m=LK;
+    osoba klients[LK];
+    osoba pom;
+    for(i=0;i<LK;++i)
+    {
+        klients[i]=klient[i];
+    }
+    i=0;
 
     while(i<LK-1&&zamiana==0)
     {
         zamiana=1;
 		for (j=0; j<m-1; j++)
 		  {
-            zam=alfabet(klient[j].nazwisko,klient[j+1].nazwisko);
-            //printf("zam=%d/n",zam);
-            //system("pause");
+            zam=alfabet(klients[j].nazwisko,klients[j+1].nazwisko);
 			if (zam==0)
 			{
-			    klients[1] = klient[j+1];
-			    klient[j+1] = klient[j];
-			    klient[j] = klients[1];
+			    pom = klients[j+1];
+			    klients[j+1] = klients[j];
+			    klients[j] = pom;
                 zamiana=0;
 			}
 		}
 		i++;
 		m--;
     }
+    system("cls");
+    for(i=0;i<LK;++i)
+        {
+            printf("\n\n\t%d",klients[i].ident);
+            printf("  %s",klients[i].imie);
+            printf("  %s",klients[i].nazwisko);
+        }
 }
 
 void zapisz (void)
@@ -616,7 +644,7 @@ void menu(void)
 
     do
     {
-        printf("\n\nNa razie dziala 1,2,3,4,6,11,12,13,14");
+        printf("\n\nNa razie dziala 1,2,3,4,5,6,11,12,13,14");
         printf("\n(1)	Wyswietl baze klientow");
         printf("\n(2)	Modyfikuj dane klienta");
         printf("\n(3)	Dodaj klienta");
@@ -667,6 +695,7 @@ void menu(void)
             }
         case 5:
             {
+                baza_p();
                 break;
             }
         case 6:
@@ -986,6 +1015,42 @@ int alfabet (char *x,char *y)
     return zam;             //1 jesli x, 0 jesli y
 }
 
+void oblicz(void)
+{
+    int b_rok,b_miesiac,b_dzien;    //biezaca data          DO ULEPSZENIA
+    b_rok=2017;
+    b_miesiac=04;
+    b_dzien=14;
+
+    int pom_m,pom_b;      //pomocniczna liczba miesiecy / ile miesiecy teraz
+    pom_b=(b_rok*12)+b_miesiac;
+
+    int i,j;
+    for (i=0;i<LP;++i)
+    {
+        poz[i].rata_kap=(float)poz[i].kwota/(float)poz[i].na_ile;
+        //printf("\nrata_kap[%d]=%f",i,poz[i].rata_kap);              //rata kapitalowa
+
+        pom_m=(poz[i].rok*12)+poz[i].miesiac;
+        //printf("\npom_m=%d  pom_b=%d",pom_m,pom_b);
+
+
+        poz[i].ile_m_spl = (poz[i].dzien<b_dzien) ? pom_b-pom_m:pom_b-pom_m-1;
+        //printf("\npoz[%d].ile_m_spl=%d",i,poz[i].ile_m_spl);        //ile miesiecy juz splacono
+
+
+        poz[i].ile_do_splaty=poz[i].kwota;
+        for(j=0;j<poz[i].ile_m_spl;++j)
+        {
+            poz[i].odsetki=poz[i].ile_do_splaty*(poz[i].procent/12);
+            poz[i].rata_lacz=poz[i].rata_kap+poz[i].odsetki;
+            poz[i].ile_do_splaty=poz[i].ile_do_splaty-poz[i].rata_kap;
+        }
+        //printf("\npoz[%d].ile_do_splaty=%f",i,poz[i].ile_do_splaty);    //ile jest jeszcze zadluzony     mozna dolozyc jeszce if <0  ==>  tzn nie zwraca nadplaty
+        //system("pause");
+    }
+}
+
 void delay(unsigned int mseconds)
 {
     clock_t goal = mseconds + clock();
@@ -1008,15 +1073,8 @@ f=fopen("baza.txt","r");     //osoba.txt            //przerobic na funkcje
 FILE *g;
 g=fopen("bank.txt","r");     //p.txt
 
-int b_rok,b_miesiac,b_dzien;    //biezaca data          DO ULEPSZENIA
-b_rok=2017;
-b_miesiac=04;
-b_dzien=14;
-
-int pom_m,pom_b;      //pomocniczna liczba miesiecy / ile miesiecy teraz
-pom_b=(b_rok*12)+b_miesiac;
-
 fscanf(f,"%d",&LK);
+fscanf(g,"%d",&LP);
 
 for(i=0;i<LK;++i)
 {
@@ -1066,29 +1124,8 @@ fscanf(g,"%d",&poz[i].na_ile);
 //printf("\n%d",poz[i].na_ile);
 fscanf(g,"%f",&poz[i].procent);
 //printf("\n%.2f",poz[i].procent);
-
-poz[i].rata_kap=(float)poz[i].kwota/(float)poz[i].na_ile;
-//printf("\nrata_kap[%d]=%f",i,poz[i].rata_kap);              //rata kapitalowa
-
-pom_m=(poz[i].rok*12)+poz[i].miesiac;
-//printf("\npom_m=%d  pom_b=%d",pom_m,pom_b);
-
-
-poz[i].ile_m_spl = (poz[i].dzien<b_dzien) ? pom_b-pom_m:pom_b-pom_m-1;
-//printf("\npoz[%d].ile_m_spl=%d",i,poz[i].ile_m_spl);        //ile miesiecy juz splacono
-
-
-poz[i].ile_do_splaty=poz[i].kwota;
-for(j=0;j<poz[i].ile_m_spl;++j)
-{
-    poz[i].odsetki=poz[i].ile_do_splaty*(poz[i].procent/12);
-    poz[i].rata_lacz=poz[i].rata_kap+poz[i].odsetki;
-    poz[i].ile_do_splaty=poz[i].ile_do_splaty-poz[i].rata_kap;
-    //printf("\nodsetki=%f",poz[i].odsetki);                     //test   pozniej do usuniecia tak samo jak i printf w klient
 }
-//printf("\npoz[%d].ile_do_splaty=%f",i,poz[i].ile_do_splaty);    //ile jest jeszcze zadluzony     mozna dolozyc jeszce if <0  ==>  tzn nie zwraca nadplaty
 
-}
 
 system("cls");
 menu();
