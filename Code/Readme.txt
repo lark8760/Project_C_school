@@ -8,5 +8,6 @@ Kasa_zp(1.3).c  ==> poprawiona czytelność kodu, można dodawać klientów!
 
 Kasa_zp(1.4).c  ==> poprawiona czytelność kodu, można modyfikować klientów 
 
-Kasa_zp(1.5).c  ==> -||-, można wyswietlać listę klientów posortowaną alfabetycznie po nazwisku, można wyświetlić bazę pożyczek 
-                  (żeby działały poprzednie wersje należy usunąć pierwszą linijkę z pliku bank.txt)
+Kasa_zp(1.5).c  ==> -||-, można wyswietlać listę klientów posortowaną alfabetycznie po nazwisku, 
+                    można wyświetlić bazę pożyczek 
+                    (żeby działały poprzednie wersje należy usunąć pierwszą linijkę z pliku bank.txt)
