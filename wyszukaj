@@ -1,0 +1,62 @@
+#include <Windows.h>
+#include <stdio.h>
+#include <time.h>
+
+#define n 10
+
+main()
+{
+int tab[n];
+int x=5;
+
+srand(time(NULL));
+
+sort(tab[n]);
+wyszukaj(tab[n],x);
+}
+/*******************************************************/
+void sort(unsigned int tab[n]){
+
+        int min=65536;          //element minimalny
+        int k;
+        int i;
+        for(i=0;i<n;i++){
+            if(tab[i]<min){
+                min=tab[i];
+                k=tab[0];
+                tab[0]=min;
+                tab[i]=k;
+            }
+        }
+        int r;               //najmniejsza rożnica pomiedzy liczbami
+        for(i=0;i<n-2;i++){
+                r=tab[i+1]-tab[i];
+            for(int j=i+1;j<n;j++){
+
+               if(tab[j]-tab[i]<r){
+                   r=tab[j]-tab[i];
+                   k=tab[i+1];
+                   tab[i+1]=tab[j];
+                   tab[j]=k;
+               }
+            }
+          }
+        for(int i=0;i<n;i++){
+        printf("%d ",tab[i]);
+        }
+
+    }
+/***********************************************************/
+int wyszukaj(int tab[n], int szukana){
+
+int q,index;
+q=rand()%n;
+if(tab[q]<szukana){
+    wyszukaj(tab[q],szukana);
+}
+else if(tab[q]==szukana){
+    index=q;
+}
+
+
+}
